@@ -1,0 +1,5 @@
+openmediavault-pwmfan (7.0.0-1) stable; urgency=medium
+
+  * Initial release.
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Mon, 17 Feb 2025 00:00:00 +0000
