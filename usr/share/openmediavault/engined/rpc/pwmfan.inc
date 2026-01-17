@@ -41,7 +41,12 @@ class Pwmfan extends \OMV\Rpc\ServiceAbstract {
         ]);
         $db = \OMV\Config\Database::getInstance();
         $object = $db->get("conf.service.pwmfan");
-        return $object->getAssoc();
+        $data = $object->getAssoc();
+        $pwmChip = $data["pwm_chip"] ?? "/sys/class/pwm/pwmchip0";
+        $hardware = $this->getHardwareStatus($pwmChip);
+        $data["pwm_available"] = $hardware["available"];
+        $data["pwm_available_message"] = $hardware["message"];
+        return $data;
     }
 
     public function setSettings($params, $context) {
@@ -104,5 +109,40 @@ class Pwmfan extends \OMV\Rpc\ServiceAbstract {
         }
 
         return $decoded;
+    }
+
+    private function getHardwareStatus(string $pwmChip) {
+        $pwmRoot = "/sys/class/pwm";
+        if (!is_dir($pwmRoot)) {
+            return [
+                "available" => false,
+                "message" => gettext("PWM subsystem not available; /sys/class/pwm is missing.")
+            ];
+        }
+
+        if (is_dir($pwmChip)) {
+            return [
+                "available" => true,
+                "message" => ""
+            ];
+        }
+
+        $chips = glob($pwmRoot . "/pwmchip*");
+        if (is_array($chips) && !empty($chips)) {
+            $names = array_map("basename", $chips);
+            return [
+                "available" => false,
+                "message" => sprintf(
+                    gettext("Configured PWM chip %s not found. Available chips: %s."),
+                    $pwmChip,
+                    implode(", ", $names)
+                )
+            ];
+        }
+
+        return [
+            "available" => false,
+            "message" => gettext("No PWM chips detected under /sys/class/pwm.")
+        ];
     }
 }

@@ -11,6 +11,25 @@ data:
       post:
         method: setSettings
     fields:
+      - type: hidden
+        name: pwm_available
+        value: true
+        submitValue: false
+      - type: hidden
+        name: pwm_available_message
+        value: ""
+        submitValue: false
+      - type: hint
+        name: pwm_available_hint
+        hintType: warning
+        text: _("PWM hardware not detected. Verify that /sys/class/pwm exists and the configured PWM chip path is valid.")
+        submitValue: false
+        modifiers:
+          - type: visible
+            constraint:
+              operator: falsy
+              arg0:
+                prop: pwm_available
       - type: checkbox
         name: enable
         label: _("Enabled")
