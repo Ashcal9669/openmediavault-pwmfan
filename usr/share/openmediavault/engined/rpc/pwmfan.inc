@@ -22,6 +22,9 @@ namespace Engined\Rpc;
 require_once("openmediavault/functions.inc");
 
 class Pwmfan extends \OMV\Rpc\ServiceAbstract {
+    private const SERVICE_NAME = "openmediavault-pwmfan";
+    private const STATUS_FILE = "/run/openmediavault-pwmfan-status.json";
+
     public function getName() {
         return "Pwmfan";
     }
@@ -29,6 +32,7 @@ class Pwmfan extends \OMV\Rpc\ServiceAbstract {
     public function initialize() {
         $this->registerMethod("getSettings");
         $this->registerMethod("setSettings");
+        $this->registerMethod("getDashboard");
     }
 
     public function getSettings($params, $context) {
@@ -51,5 +55,54 @@ class Pwmfan extends \OMV\Rpc\ServiceAbstract {
         $object->setAssoc($params);
         $db->set($object);
         return $object->getAssoc();
+    }
+
+    public function getDashboard($params, $context) {
+        $this->validateMethodContext($context, [
+            "role" => OMV_ROLE_ADMINISTRATOR
+        ]);
+
+        $systemCtl = new \OMV\System\SystemCtl(self::SERVICE_NAME);
+        $running = $systemCtl->isActive();
+        $status = $this->readStatus();
+        $tempValue = $status["temperature"] ?? null;
+        $speedValue = $status["speed"] ?? null;
+
+        return [
+            [
+                "title" => gettext("Service"),
+                "value" => $running ? gettext("Running") : gettext("Stopped")
+            ],
+            [
+                "title" => gettext("Temperature"),
+                "value" => is_numeric($tempValue) ?
+                    sprintf("%.1f C", $tempValue) :
+                    gettext("n/a")
+            ],
+            [
+                "title" => gettext("Fan Speed"),
+                "value" => is_numeric($speedValue) ?
+                    sprintf("%d%%", $speedValue) :
+                    gettext("n/a")
+            ]
+        ];
+    }
+
+    private function readStatus() {
+        if (!file_exists(self::STATUS_FILE)) {
+            return null;
+        }
+
+        $content = file_get_contents(self::STATUS_FILE);
+        if ($content === false) {
+            return null;
+        }
+
+        $decoded = json_decode($content, true);
+        if (!is_array($decoded)) {
+            return null;
+        }
+
+        return $decoded;
     }
 }

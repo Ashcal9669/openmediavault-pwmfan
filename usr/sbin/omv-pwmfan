@@ -6,6 +6,7 @@ import subprocess
 import time
 
 CONFIG_PATH = "/etc/openmediavault/pwmfan.json"
+STATUS_PATH = "/run/openmediavault-pwmfan-status.json"
 
 DEFAULT_CONFIG = {
     "temp_source": "hdd",
@@ -102,6 +103,25 @@ def load_config():
     except (OSError, json.JSONDecodeError) as exc:
         log(f"Failed to read config: {exc}; using defaults")
     return normalize_config({})
+
+
+def write_status(config, temp, speed):
+    status = {
+        "timestamp": int(time.time()),
+        "temperature": temp,
+        "speed": int(speed),
+        "temp_source": config["temp_source"],
+        "pwm_channel": config["pwm_channel"],
+        "pwm_period": config["pwm_period"],
+    }
+    tmp_path = f"{STATUS_PATH}.tmp"
+    try:
+        os.makedirs(os.path.dirname(STATUS_PATH), exist_ok=True)
+        with open(tmp_path, "w", encoding="utf-8") as handle:
+            json.dump(status, handle)
+        os.replace(tmp_path, STATUS_PATH)
+    except OSError as exc:
+        log(f"Failed to write status file: {exc}")
 
 
 def read_cpu_temp(path):
@@ -225,6 +245,7 @@ def main():
             log(f"Hottest Source: {temp:.1f}C | Setting Fans to: {speed}%")
 
         set_fan_speed(pwm_channel_path, config["pwm_period"], speed)
+        write_status(config, temp, speed)
 
         for _ in range(config["update_interval"]):
             if STOP_REQUESTED:

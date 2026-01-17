@@ -9,7 +9,7 @@ Homepage: http://omv-extras.org/
 
 Package: openmediavault-pwmfan
 Architecture: armhf arm64
-Depends: openmediavault (>= 7.0),
+Depends: openmediavault (>= 8.0),
          python3,
          smartmontools,
          ${misc:Depends}

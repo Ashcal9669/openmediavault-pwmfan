@@ -1,0 +1,19 @@
+Package: openmediavault-pwmfan
+Version: 8.0.1-2
+Architecture: arm64
+Maintainer: OpenMediaVault Plugin Developers <plugins@omv-extras.org>
+Installed-Size: 66
+Depends: openmediavault (>= 8.0), python3, smartmontools
+Filename: ./openmediavault-pwmfan_8.0.1-2_arm64.deb
+Size: 9364
+MD5sum: 8b8e0dcaab5ce931aa9ffc76b61fb956
+SHA1: 0ccee4f5633cc411f4fd1ab3d87d2cde89d907d4
+SHA256: f0d0cf64fad913f8dfe7577e7926b00bb8b420d3d7db3c90a7b6313f1536e11e
+Section: misc
+Priority: optional
+Homepage: http://omv-extras.org/
+Description: OpenMediaVault PWM fan controller plugin
+ PWM fan controller for Raspberry Pi using sysfs PWM and optional HDD/CPU
+ temperature sources.
+Plugin-Section: system
+
