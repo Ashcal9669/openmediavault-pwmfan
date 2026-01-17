@@ -105,6 +105,30 @@ def load_config():
     return normalize_config({})
 
 
+def pwm_hardware_available(config):
+    pwm_root = "/sys/class/pwm"
+    if not os.path.isdir(pwm_root):
+        log(f"PWM root not found: {pwm_root}")
+        return False
+
+    pwm_chip = config["pwm_chip"]
+    if os.path.isdir(pwm_chip):
+        return True
+
+    try:
+        chips = sorted(
+            name for name in os.listdir(pwm_root) if name.startswith("pwmchip")
+        )
+    except OSError:
+        chips = []
+
+    if chips:
+        log(f"PWM chip path not found: {pwm_chip}. Available: {', '.join(chips)}")
+    else:
+        log("No PWM chips detected under /sys/class/pwm")
+    return False
+
+
 def write_status(config, temp, speed):
     status = {
         "timestamp": int(time.time()),
@@ -231,6 +255,10 @@ def set_fan_speed(pwm_channel_path, period, percent):
 
 def main():
     config = load_config()
+    if not pwm_hardware_available(config):
+        log("PWM hardware not available; exiting.")
+        return
+
     pwm_channel_path = setup_pwm(config)
 
     log("PWM Fan Service Started")
