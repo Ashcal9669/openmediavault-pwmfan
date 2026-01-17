@@ -1,3 +1,10 @@
+openmediavault-pwmfan (8.0.1-4) stable; urgency=medium
+
+  * Mark package as architecture-independent (OMV 8 arm64/amd64).
+  * Broaden description to cover non-RPi PWM hardware.
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sat, 17 Jan 2026 07:28:00 +0000
+
 openmediavault-pwmfan (8.0.1-3) stable; urgency=medium
 
   * Add systemd conditions to skip start when PWM hardware is missing.

@@ -8,11 +8,10 @@ Standards-Version: 4.3.0
 Homepage: http://omv-extras.org/
 
 Package: openmediavault-pwmfan
-Architecture: armhf arm64
+Architecture: all
 Depends: openmediavault (>= 8.0),
          python3,
          smartmontools,
          ${misc:Depends}
 Description: OpenMediaVault PWM fan controller plugin
- PWM fan controller for Raspberry Pi using sysfs PWM and optional HDD/CPU
- temperature sources.
+ PWM fan controller using sysfs PWM and optional HDD/CPU temperature sources.
