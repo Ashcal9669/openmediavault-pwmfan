@@ -19,17 +19,24 @@ data:
         name: pwm_available_message
         value: ""
         submitValue: false
-      - type: hint
-        name: pwm_available_hint
-        hintType: warning
-        text: _("PWM hardware not detected. Verify that /sys/class/pwm exists and the configured PWM chip path is valid.")
+      - type: textInput
+        name: pwm_available_warning
+        label: _("PWM warning")
+        value: ""
+        readonly: true
         submitValue: false
         modifiers:
-          - type: visible
+          - type: hidden
             constraint:
-              operator: falsy
+              operator: truthy
               arg0:
                 prop: pwm_available
+          - type: value
+            typeConfig: "{{ pwm_available_message }}"
+            constraint:
+              operator: truthy
+              arg0:
+                prop: pwm_available_message
       - type: checkbox
         name: enable
         label: _("Enabled")

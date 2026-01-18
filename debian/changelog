@@ -1,3 +1,9 @@
+openmediavault-pwmfan (8.0.1-4.2) stable; urgency=medium
+
+  * Fix PWM warning display to hide when hardware is available.
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Sun, 18 Jan 2026 03:05:00 +0000
+
 openmediavault-pwmfan (8.0.1-4.1) stable; urgency=medium
 
   * Add UI warning when PWM hardware is missing.
