@@ -1,5 +1,5 @@
 # openmediavault-pwmfan
-OpenMediaVault 7 PWM fan controller plugin for Raspberry Pi.
+OpenMediaVault 8 PWM fan controller plugin for Raspberry Pi.
 
 ## Install (global repo)
 This plugin is published via GitHub Pages from the `docs/` folder.
@@ -28,5 +28,5 @@ dpkg-buildpackage -b -us -uc
 ```
 
 ## Notes
-- Architectures: `armhf`, `arm64`.
+- Architectures: `amd64/x86`, `arm64`.
 - The daemon reads `/etc/openmediavault/pwmfan.json`.
