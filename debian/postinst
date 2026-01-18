@@ -32,7 +32,12 @@ case "$1" in
 
         omv-confdbadm create "conf.service.pwmfan"
         if [ -n "$2" ]; then
-            omv-confdbadm migrate "conf.service.pwmfan" "${2}"
+            # Extract upstream version to avoid invalid Debian revision formats
+            # like 8.0.1-4.2 which omv-confdbadm rejects.
+            oldver=$(printf '%s' "$2" | sed -E 's/^[0-9]+://; s/-.*$//')
+            if [ -n "$oldver" ]; then
+                omv-confdbadm migrate "conf.service.pwmfan" "${oldver}"
+            fi
         fi
     ;;
 
