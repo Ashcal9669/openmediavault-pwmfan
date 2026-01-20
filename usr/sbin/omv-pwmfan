@@ -242,7 +242,19 @@ def read_nvme_temps(drives):
             )
         except (OSError, subprocess.CalledProcessError):
             continue
-        temps.extend(parse_smartctl_temps(output))
+        # Prefer the composite temperature line for NVMe (ignore extra sensors).
+        composite = None
+        for line in output.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("Temperature:"):
+                numbers = re.findall(r"-?\d+", stripped)
+                if numbers:
+                    composite = int(numbers[-1])
+                    break
+        if composite is not None:
+            temps.append(composite)
+        else:
+            temps.extend(parse_smartctl_temps(output))
     return temps
 
 
