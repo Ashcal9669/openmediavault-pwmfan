@@ -2,13 +2,13 @@ Package: openmediavault-pwmfan
 Version: 8.0.1-5
 Architecture: all
 Maintainer: OpenMediaVault Plugin Developers <plugins@omv-extras.org>
-Installed-Size: 70
+Installed-Size: 71
 Depends: openmediavault (>= 8.0), python3, smartmontools
 Filename: ./openmediavault-pwmfan_8.0.1-5_all.deb
-Size: 10728
-MD5sum: 8d9932fb10600f10537f12845c200baf
-SHA1: 9820982e1956c4ace251e00db2426405fdb8ac34
-SHA256: a2f48abd0d0d1a630a356060abeef26aba94d74c77611b193693b55fbf741bb3
+Size: 10816
+MD5sum: 0056dbb02bb6154fac0cfac92749255f
+SHA1: 4bacbe07e5e0bd9fdc9bfa2da6c06143c0482ce6
+SHA256: e699a36f1225e2c9697f6260a099d479d3ce1a192fb9b1fb852495fd631212fb
 Section: misc
 Priority: optional
 Homepage: http://omv-extras.org/
