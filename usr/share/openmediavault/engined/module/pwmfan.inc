@@ -51,6 +51,7 @@ class Pwmfan extends \OMV\Engine\Module\ServiceAbstract implements
         $config = [
             "temp_source" => (string) $object->get("temp_source"),
             "hdd_drives" => $this->parseDrives($object->get("hdd_drives")),
+            "nvme_drives" => $this->parseDrives($object->get("nvme_drives")),
             "hdd_standby" => (bool) $object->get("hdd_standby"),
             "cpu_temp_path" => (string) $object->get("cpu_temp_path"),
             "pwm_chip" => (string) $object->get("pwm_chip"),

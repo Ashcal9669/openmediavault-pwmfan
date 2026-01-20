@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import os
+import re
 import signal
 import subprocess
 import time
@@ -11,6 +12,7 @@ STATUS_PATH = "/run/openmediavault-pwmfan-status.json"
 DEFAULT_CONFIG = {
     "temp_source": "hdd",
     "hdd_drives": ["/dev/sda", "/dev/sdb"],
+    "nvme_drives": ["/dev/nvme0n1"],
     "hdd_standby": True,
     "cpu_temp_path": "/sys/class/thermal/thermal_zone0/temp",
     "pwm_chip": "/sys/class/pwm/pwmchip0",
@@ -56,7 +58,15 @@ def normalize_config(raw):
         config.update(raw)
 
     temp_source = str(config.get("temp_source", "hdd")).lower()
-    if temp_source not in ("hdd", "cpu", "hdd_cpu"):
+    if temp_source not in (
+        "hdd",
+        "cpu",
+        "hdd_cpu",
+        "nvme",
+        "nvme_hdd",
+        "nvme_cpu",
+        "nvme_hdd_cpu",
+    ):
         temp_source = "hdd"
     config["temp_source"] = temp_source
 
@@ -70,6 +80,17 @@ def normalize_config(raw):
     elif not isinstance(drives, list):
         drives = []
     config["hdd_drives"] = drives
+
+    nvme_drives = config.get("nvme_drives", [])
+    if isinstance(nvme_drives, str):
+        nvme_drives = [
+            item.strip()
+            for item in nvme_drives.replace("\n", ",").split(",")
+            if item.strip()
+        ]
+    elif not isinstance(nvme_drives, list):
+        nvme_drives = []
+    config["nvme_drives"] = nvme_drives
 
     config["hdd_standby"] = bool(config.get("hdd_standby", True))
     config["pwm_channel"] = to_int(config.get("pwm_channel"), 0)
@@ -165,12 +186,22 @@ def read_cpu_temp(path):
 def parse_smartctl_temps(output):
     temps = []
     for line in output.splitlines():
+        stripped = line.strip()
         if "Temperature_Celsius" in line or "Airflow_Temperature_Cel" in line:
             parts = line.split()
             for token in reversed(parts):
                 if token.isdigit():
                     temps.append(int(token))
                     break
+            continue
+        if (
+            stripped.startswith("Temperature:")
+            or stripped.startswith("Temperature Sensor")
+            or stripped.startswith("Composite Temperature")
+        ):
+            numbers = re.findall(r"-?\d+", stripped)
+            if numbers:
+                temps.append(int(numbers[-1]))
     return temps
 
 
@@ -196,11 +227,32 @@ def read_hdd_temps(drives, standby):
     return temps
 
 
+def read_nvme_temps(drives):
+    temps = []
+    if not drives:
+        return temps
+
+    base_cmd = ["smartctl", "-A"]
+    for drive in drives:
+        try:
+            output = subprocess.check_output(
+                base_cmd + [drive],
+                text=True,
+                stderr=subprocess.STDOUT,
+            )
+        except (OSError, subprocess.CalledProcessError):
+            continue
+        temps.extend(parse_smartctl_temps(output))
+    return temps
+
+
 def get_temperature(config):
     temps = []
-    if config["temp_source"] in ("hdd", "hdd_cpu"):
+    if config["temp_source"] in ("hdd", "hdd_cpu", "nvme_hdd", "nvme_hdd_cpu"):
         temps.extend(read_hdd_temps(config["hdd_drives"], config["hdd_standby"]))
-    if config["temp_source"] in ("cpu", "hdd_cpu"):
+    if config["temp_source"] in ("nvme", "nvme_hdd", "nvme_cpu", "nvme_hdd_cpu"):
+        temps.extend(read_nvme_temps(config["nvme_drives"]))
+    if config["temp_source"] in ("cpu", "hdd_cpu", "nvme_cpu", "nvme_hdd_cpu"):
         cpu_temp = read_cpu_temp(config["cpu_temp_path"])
         if cpu_temp is not None:
             temps.append(cpu_temp)

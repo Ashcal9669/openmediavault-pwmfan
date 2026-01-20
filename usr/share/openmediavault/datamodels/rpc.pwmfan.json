@@ -16,6 +16,10 @@
 				"type": "string",
 				"required": true
 			},
+			"nvme_drives": {
+				"type": "string",
+				"required": true
+			},
 			"hdd_standby": {
 				"type": "boolean",
 				"required": true

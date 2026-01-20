@@ -1,3 +1,10 @@
+openmediavault-pwmfan (8.0.1-5) stable; urgency=medium
+
+  * Add NVMe temperature sources (NVMe-only and mixed with HDD/CPU).
+  * Add NVMe device list for smartctl inputs.
+
+ -- OpenMediaVault Plugin Developers <plugins@omv-extras.org>  Tue, 20 Jan 2026 22:15:00 +0000
+
 openmediavault-pwmfan (8.0.1-4.3) stable; urgency=medium
 
   * Fix postinst migration version parsing for Debian revisions.

@@ -19,6 +19,10 @@
 			"type": "string",
 			"default": "/dev/sda,/dev/sdb"
 		},
+		"nvme_drives": {
+			"type": "string",
+			"default": "/dev/nvme0"
+		},
 		"hdd_standby": {
 			"type": "boolean",
 			"default": true

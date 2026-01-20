@@ -50,13 +50,22 @@ data:
         store:
           data:
             - ["hdd", _("HDD SMART (smartctl)")]
+            - ["nvme", _("NVMe SMART (smartctl)")]
             - ["cpu", _("CPU thermal zone")]
             - ["hdd_cpu", _("HDD + CPU (max)")]
+            - ["nvme_hdd", _("NVMe + HDD (max)")]
+            - ["nvme_cpu", _("NVMe + CPU (max)")]
+            - ["nvme_hdd_cpu", _("NVMe + HDD + CPU (max)")]
       - type: textarea
         name: hdd_drives
         label: _("HDD devices")
         hint: _("Comma or newline separated device paths, e.g. /dev/sda,/dev/sdb")
         value: "/dev/sda,/dev/sdb"
+      - type: textarea
+        name: nvme_drives
+        label: _("NVMe devices")
+        hint: _("Comma or newline separated device paths, e.g. /dev/nvme0n1,/dev/nvme1n1")
+        value: "/dev/nvme0n1"
       - type: checkbox
         name: hdd_standby
         label: _("Respect standby")
